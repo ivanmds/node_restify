@@ -10,8 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/restify": "^8.4.2",
-    "nodemon": "^2.0.2",
     "restify": "^6.3.4"
+  },
+  "devDependencies": {
+    "@types/restify": "^8.4.2",
+    "nodemon": "^2.0.2"
   }
 }
