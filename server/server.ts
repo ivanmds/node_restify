@@ -1,24 +1,28 @@
 import * as restify from 'restify';
-import {environment} from '../common/environment';
-import {Router} from '../common/router';
+import { environment } from '../common/environment';
+import { Router } from '../common/router';
+const mongoose = require('mongoose');
 
 export class Server {
 
-    application : restify.Server;
-    
+    application: restify.Server;
+
+    initializeDb() {
+        return mongoose.connect(environment.db.url, { useNewUrlParser: true });
+    }
+
     initRoutes(routers: Router[]): Promise<any> {
         return new Promise((resolve, reject) => {
-            try{
+            try {
 
                 this.application = restify.createServer({
                     name: 'meat-api',
                     version: '1.0.0'
                 });
-                
+
                 this.application.use(restify.plugins.queryParser());
 
-                for(let router of routers)
-                {
+                for (let router of routers) {
                     router.applyRoutes(this.application);
                 }
 
@@ -26,19 +30,21 @@ export class Server {
                     resp.send({ message: 'hello' });
                     return next();
                 });
-                
+
                 this.application.listen(environment.server.port, () => {
                     resolve(this.application);
                 });
 
-            } catch(error) {
+            } catch (error) {
                 reject(error);
             }
-         });
+        });
     };
 
     bootstrap(routers: Router[] = []): Promise<Server> {
-        return this.initRoutes(routers).then(() => this);
+        return this.initializeDb().then(() => {
+            return this.initRoutes(routers).then(() => this);
+        });
     };
 
 }

@@ -1,15 +1,16 @@
-const users = [
-    { id: 1, name: 'Ivan Meireles', email: 'ivanmds2@hotmail.com' },
-    { id: 2, name: 'Isa Meireles', email: 'isa@hotmail.com' }
-];
+import  * as mongoose from 'mongoose';
 
-export class User {
-    static findAll(): Promise<any[]> {
-        return Promise.resolve(users);
+const userSchema = new mongoose.Schema({
+    name: {
+        type: String
+    },
+    email: {
+        type: String,
+        unique: true
+    },
+    password: {
+        type: String
     }
+});
 
-    static findById(id: Number): Promise<any> {
-        let user = users.filter(user => user.id == id);
-        return Promise.resolve(user);
-    }
-}
+export const User = mongoose.model('User', userSchema);
