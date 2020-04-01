@@ -1,6 +1,8 @@
 import * as restify from 'restify';
 import { environment } from '../common/environment';
 import { Router } from '../common/router';
+import { handlerError } from './error.handler';
+
 const mongoose = require('mongoose');
 
 export class Server {
@@ -35,6 +37,8 @@ export class Server {
                 this.application.listen(environment.server.port, () => {
                     resolve(this.application);
                 });
+
+                this.application.on('restifyError', handlerError);
 
             } catch (error) {
                 reject(error);

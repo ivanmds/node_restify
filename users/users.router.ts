@@ -1,6 +1,7 @@
 import { Router } from '../common/router';
 import * as restify from 'restify';
 import { User } from './users.model'
+import { NotFoundError } from 'restify-errors';
 
 class UsersRouter extends Router {
 
@@ -10,7 +11,7 @@ class UsersRouter extends Router {
             User.find().then(users => {
                 resp.send(users);
                 return next();
-            });
+            }).catch(next);
 
         });
 
@@ -21,12 +22,11 @@ class UsersRouter extends Router {
                     resp.send(user);
                 }
                 else {
-                    resp.send(404);
+                    throw new NotFoundError('Not found document');
                 }
 
                 return next();
-            });
-
+            }).catch(next);
         });
 
         application.post('/users', (req, resp, next) => {
@@ -35,39 +35,38 @@ class UsersRouter extends Router {
                 user.password = undefined;
                 resp.json(user);
                 return next();
-            });
+            }).catch(next);
         });
 
         application.put("/users/:id", (req, resp, next) => {
-            const options = { overwrite: true };
+            const options = { runValidators: true, overwrite: true };
             User.update({ _id: req.params.id }, req.body, options)
                 .exec().then(result => {
                     if (result.n) {
                         return User.findById(req.params.id);
                     } else {
-                        resp.send(404);
+                        throw new NotFoundError('Not found document');
                     }
                 }).then(user => {
                     resp.json(user);
                     return next();
-                });
+                }).catch(next);
         });
 
 
         application.patch("/users/:id", (req, resp, next) => {
 
-            const options = { new: true };
+            const options = { runValidators: true, new: true };
             User.findByIdAndUpdate(req.params.id, req.body, options).then(user => {
                 if (user) {
                     resp.send(user);
                 }
                 else {
-                    resp.send(404);
+                    throw new NotFoundError('Not found document');
                 }
-  
-                return next();
 
-            });
+                return next();
+            }).catch(next);
         });
 
         application.del("/users/:id", (req, resp, next) => {
@@ -77,11 +76,11 @@ class UsersRouter extends Router {
                     resp.send(204);
                 }
                 else {
-                    resp.send(404);
+                    throw new NotFoundError('Not found document');
                 }
-  
+
                 return next();
-            });
+            }).catch(next);
         });
     }
 }

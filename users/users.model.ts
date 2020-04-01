@@ -1,4 +1,4 @@
-import  * as mongoose from 'mongoose';
+import * as mongoose from 'mongoose';
 
 export interface User extends mongoose.Document {
     name: string,
@@ -8,15 +8,26 @@ export interface User extends mongoose.Document {
 
 const userSchema = new mongoose.Schema({
     name: {
-        type: String
+        type: String,
+        required: true,
+        maxlength: 80,
+        minlength: 3
     },
     email: {
         type: String,
-        unique: true
+        unique: true,
+        required: true
+        //match to use regex
     },
     password: {
         type: String,
-        select: false
+        select: false,
+        required: true
+    },
+    gender: {
+        type: String,
+        required: false,
+        enum: ['Male', 'Female']
     }
 });
 
